@@ -1,4 +1,4 @@
-const interviewDatabase = require("./models/interviewModel.js");
+const interviewDatabase = require("../models/interviewModel");
 
 exports.savingInterviewDetails = async (req,res)=>{
     await interviewDatabase.save(req.body);
