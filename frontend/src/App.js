@@ -1,19 +1,11 @@
 
 // import './App.css';
 import { Redirect,BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+
 import Texteditor from './components/texteditor'; 
 import {v4 as uuidV4} from 'uuid'; 
-import {io} from "socket.io-client"
+import CommChannels from './components/CommChannel';
 function App() {
-  const [socket, useSocket] = useState()
-  useEffect(() => { 
-    const s= io("http://localhost:3001")
-    setSocket(s)
-    return () => {
-        s.disconnect(); 
-    }
-}, [])
   return (
     <div className="App">
       <Router>
@@ -23,7 +15,13 @@ function App() {
           <Redirect to={`/documents/${uuidV4()}`} />
           </Route>
           <Route path="/documents/:id" >
-          <Texteditor/>
+          <div style={{display: 'flex', flexDirection: 'row' }}>
+            <div>
+            <Texteditor/>
+         
+            </div>
+             <CommChannels/> 
+            </div>
           </Route>
         </Switch>
       </Router>

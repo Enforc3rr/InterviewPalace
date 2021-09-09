@@ -3,61 +3,14 @@ import { useCallback , useEffect, useState} from 'react';
 import Quill from "quill"; 
 import "quill/dist/quill.snow.css"
 import { useParams } from "react-router-dom";
-  
-import {io } from "socket.io-client"
-import Receive from './receiveMessage';
-import Send from './sendMessage';
+import sock from '..';
 
-export default function Texteditor() {
+export default function Texteditor(props) {
     const {id : documentID}  = useParams(); 
-    const [socket , setSocket] = useState()
-    const [quill, setquill] = useState() 
-    const  [ sendmessage, setsendmessage] = useState("message is here") ; 
-    
-    const  [ recievemessage, setrecievemessage] = useState("message is here") ;
-    
+    const [quill, setquill] = useState()  
+     const [socket , setSocket] = useState(); 
 
 
- //  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-     // creating a room on revieving message...
-      function manageReciveMessage(message){
-           console.log()
-           return <Receive  recievemessage={message}/>; 
-      }
-
-     useEffect(() =>{
-       if(socket == null || recievemessage ==null) return;
-     
-       socket.once('load-message',recievemessage =>{
-            console.log("load message" + recievemessage)
-        })   
-        socket.emit('chat-room', documentID)
-    } , [socket ,recievemessage ,documentID])
-  
-    //...
-    useEffect(()=>{
-        if(socket == null || sendmessage == null) return ; 
-      
-        socket.emit('send-message', sendmessage)
-         
-    } , [socket, sendmessage])
-  
-     
-    useEffect(()=>{
-        if(socket == null || sendmessage == null) return ; 
-       
-        socket.on('recieve-message', (recievemessage)=>{
-               manageReciveMessage("dsfsdfjdsoigjfdosigjoifd"); 
-        })
-        // message tile 
-   
-    } , [socket, recievemessage])
-  
-
-
-
-// ====================================================================
-  
      useEffect(() => {  
        if(socket == null || quill == null) return;
        socket.once('load-document', document =>{
@@ -97,7 +50,7 @@ export default function Texteditor() {
             socket.emit('send-changes', delta)
             console.log(delta)
             const data = JSON.stringify(quill.getContents())
-    localStorage.setItem(documentID, data);
+            localStorage.setItem(documentID, data);
          }
          quill.on('text-change', handler)
          return () => {
@@ -106,6 +59,13 @@ export default function Texteditor() {
      }, [socket, quill])
 
 
+     useEffect(() => { 
+        const s = sock ; 
+        setSocket(s)
+         return () => {
+            s.disconnect(); 
+         }
+     }, [])
 
     const wrapperref = useCallback(
        (wrapper) => {
@@ -120,17 +80,9 @@ export default function Texteditor() {
     }, [])
 
     return (
-        <div style={{display: 'flex', flexDirection: 'row' }}>
+
         <div className="container" ref={wrapperref}>
         </div>
-          
-        <div className="" style={{backgroundColor:'white'  }}>
-            {<Receive revievemessage={recievemessage} />}
-            <div>
-           
-  <input type="text" id="lname" name="lname" style={{}} /> 
-            </div>
-        </div>
-        </div>    
+        
     )
 }

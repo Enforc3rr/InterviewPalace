@@ -17,6 +17,7 @@ const databaseConfiguration = require("./config/dbconfig")
 const router = require("./routes/interviewRoutes");
 
 io.on("connection", socket => {
+   console.log("connected to socket 1")
    socket.on('get-document', documentID =>{
      const data = ""
      socket.join(documentID)
@@ -27,10 +28,10 @@ io.on("connection", socket => {
    })
   }) 
   socket.on('chat-room', chatID =>{
+    console.log("connected to socket" + chatID)
      socket.join(chatID)
-     socket.emit('load-message', "no message mf")
-     console.log("connectecd to chatroom")
-     socket.on('send-message', message =>{
+     socket.on('NEW_MESSAGE', message =>{
+       console.log("NEW MESSAGE EVENT CALLEED")
        socket.broadcast.to(chatID).emit('recieve-message', message); 
      })
   })
