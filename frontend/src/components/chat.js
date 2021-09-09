@@ -1,48 +1,86 @@
 import React from 'react'
 import sock from '..';
-import { useEffect, useState } from 'react';
-
-const Button = ({ open, onClick }) => (
-    <div
-        onClick={onClick}
-        className={`button ${open ? 'button--open' : 'button--closed'}`}
-    >
-        {open ? (
-            <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M19.333 2.547l-1.88-1.88L10 8.12 2.547.667l-1.88 1.88L8.12 10 .667 17.453l1.88 1.88L10 11.88l7.453 7.453 1.88-1.88L11.88 10z"
-                    fillRule="evenodd"
-                />
-            </svg>
-        ) : (
-                <svg width="24" height="20" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M.011 20L24 10 .011 0 0 7.778 17.143 10 0 12.222z"
-                        fillRule="evenodd"
-                    />
-                </svg>
-            )}
-    </div>
-);
+import { useEffect, useState , useRef} from 'react';
+import "./chat.css"
+import { TextField } from '@material-ui/core';
+import { useParams } from 'react-router';
 
 
 const Chat = () => {
-   const [socket, setsocket] = useState(); 
- 
+    const [ state, setState ] = useState({ message: ""})
+	const [ chat, setChat ] = useState([])
+    const [socket, setsocket] = useState()
+    const {id: chatID} = useParams()
+    // getting socket connection 
+
     useEffect(() => {
-        const s = sock; 
+        const s = sock ; 
         setsocket(s)
         return () => {
-           s.disconnect();  
+          s.disconnect()
         }
-    }, []) 
+    }, [])
 
-    return (
-       <div>
-          JHe;;p , lets chat mf
-          
-       </div>
-    );
+    useEffect(() => {
+        if(socket == null )return ; 
+        socket.emit('chat-room', chatID); 
+    }, [socket])
+    
+    
+    useEffect(
+		() => {
+		    if(socket == null) return ; 
+            socket.on("recieve-message", ({message }) => {
+				setChat([ ...chat, { message } ])
+			})
+			return () => socket.disconnect()
+		},
+		[ chat ]
+	)
+
+	
+    const onTextChange = (e) => {
+		setState({ ...state, [e.target.value] : e.target.value })
+	}
+
+	const onMessageSubmit = (e) => {
+        e.preventDefault()
+        const { message } = state
+		socket.emit('NEW_MESSAGE', { message})
+		setState({ message: ""})
+	}
+
+	const renderChat = () => {
+		return chat.map(({ message }, index) => (
+			<div key={index}>
+				<h3>
+				  <span>{message}</span>
+				</h3>
+			</div>
+		))
+	}
+ 
+
+	return (
+		<div className="card">   
+				{renderChat()}
+			<form onSubmit={onMessageSubmit}>
+				<h1>Messenger</h1>
+				<div>
+					<TextField
+						name="message"
+						onChange={(e) => onTextChange(e)}
+                        // value={""}
+						id="outlined-multiline-static"
+						variant="outlined"
+						label="Message"
+					/>
+				</div>
+				<button>Send Message</button>
+			</form>
+
+		</div>
+	)
 }
 
 export default Chat ; 

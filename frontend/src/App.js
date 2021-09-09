@@ -15,13 +15,13 @@ function App() {
           <Redirect to={`/documents/${uuidV4()}`} />
           </Route>
           <Route path="/documents/:id" >
-          <div style={{display: 'flex', flexDirection: 'row' }}>
+          {/* <div style={{display: 'flex', flexDirection: 'row' }}> */}
             <div>
-            <Texteditor/>
+            {/* <Texteditor/> */}
          
             </div>
              <CommChannels/> 
-            </div>
+            {/* </div> */}
           </Route>
         </Switch>
       </Router>

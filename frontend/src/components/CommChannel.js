@@ -14,13 +14,12 @@ export default function CommChannels() {
         }
     }, [])
 
-    useEffect(() => {
-        if(socket == null )return ; 
-        socket.emit('chat-room', chatID); 
-    }, [socket])
+
     return (
         <div>
             <Chat/>
         </div>
     )
 }
+
+

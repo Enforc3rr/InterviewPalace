@@ -30,9 +30,11 @@ io.on("connection", socket => {
   socket.on('chat-room', chatID =>{
     console.log("connected to socket" + chatID)
      socket.join(chatID)
+     console.log('joinded chat id', chatID)
      socket.on('NEW_MESSAGE', message =>{
        console.log("NEW MESSAGE EVENT CALLEED")
-       socket.broadcast.to(chatID).emit('recieve-message', message); 
+       socket.broadcast.to(chatID).emit('recieve-message', "hello guys");
+       console.log(message) 
      })
   })
   })
