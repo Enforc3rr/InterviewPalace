@@ -37,10 +37,24 @@ io.on("connection", socket => {
        console.log(message) 
      })
   })
+
+  socket.on('video-call', videoID =>{
+      socket.join(videoID)
+      socket.on("callUser", (data) => {
+        console.log("call user")
+        socket.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+      })
+    
+      socket.on("answerCall", (data) => {
+        console.log("answer call ")
+        socket.to(data.to).emit("callAccepted", data.signal)
+      })
+       
   })
-  
+})
 
 
+ 
 databaseConfiguration()
     .then(()=>console.log("Interview Service Connected To Database"))
     .catch(()=>console.log("Interview Service Failed To Connect To Database"));
