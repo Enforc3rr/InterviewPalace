@@ -7,7 +7,7 @@
 .png
 .svg
 .ico
-
+.lock
 # testing
 /coverage
 
